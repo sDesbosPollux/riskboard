@@ -6,8 +6,7 @@
     "types": ["node"],
     "tsBuildInfoFile": "dist/.tsbuildinfo"
   },
-  "references": [
-    { "path": "../../packages/domain" }
-  ],
-  "include": ["src"]
+  "references": [{ "path": "../../packages/domain" }],
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts", "vitest.config.ts"]
 }
