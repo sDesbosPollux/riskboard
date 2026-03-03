@@ -91,16 +91,21 @@ describe("computeScore", () => {
     expect(result.reasons.some((r) => r.includes("Age"))).toBe(false);
   });
 
-  it("applies -10 for age >= 65", () => {
+  it("does not penalise age of exactly 65 (boundary)", () => {
     const result = computeScore({ ...base, age: 65 });
-    expect(result.reasons.some((r) => r.includes("65 or above"))).toBe(true);
+    expect(result.reasons.some((r) => r.includes("Age"))).toBe(false);
+  });
+
+  it("applies -10 for age > 65", () => {
+    const result = computeScore({ ...base, age: 66 });
+    expect(result.reasons.some((r) => r.includes("Age above 65"))).toBe(true);
   });
 
   it("returns REVIEW when score is between 50 and 69", () => {
     // -40 ratio, -10 disposable => 50
     const result = computeScore({
       incomeMonthly: 1000,
-      expensesMonthly: 500,  // disposable = 500, triggers <1000 rule => -10
+      expensesMonthly: 500, // disposable = 500, triggers <1000 rule => -10
       requestedAmount: 7000, // ratio = 7000/12000 ≈ 0.583 => -40
       existingDebt: 0,
       employmentType: "CDI",
@@ -114,7 +119,7 @@ describe("computeScore", () => {
     // worst case: ratio > 0.5 (-40), disposable < 500 (-30), FREELANCE (-20), age < 21 (-15)
     const result = computeScore({
       incomeMonthly: 1000,
-      expensesMonthly: 800,  // disposable = 200 < 500 => -30
+      expensesMonthly: 800, // disposable = 200 < 500 => -30
       requestedAmount: 7000, // ratio = 7000/12000 > 0.5 => -40
       existingDebt: 0,
       employmentType: "FREELANCE", // -20
@@ -127,13 +132,27 @@ describe("computeScore", () => {
   it("score is clamped to 0 and never goes negative", () => {
     const result = computeScore({
       incomeMonthly: 500,
-      expensesMonthly: 490,  // disposable = 10 < 500 => -30
+      expensesMonthly: 490, // disposable = 10 < 500 => -30
       requestedAmount: 5000, // ratio = 5000/6000 > 0.5 => -40
       existingDebt: 0,
       employmentType: "FREELANCE", // -20
       age: 18, // -15
     });
     expect(result.score).toBeGreaterThanOrEqual(0);
+  });
+
+  it("returns REJECT with 'Invalid income' when incomeMonthly is zero", () => {
+    const result = computeScore({ ...base, incomeMonthly: 0 });
+    expect(result.score).toBe(0);
+    expect(result.decision).toBe("REJECT");
+    expect(result.reasons).toContain("Invalid income");
+  });
+
+  it("returns REJECT with 'Invalid income' when incomeMonthly is negative", () => {
+    const result = computeScore({ ...base, incomeMonthly: -500 });
+    expect(result.score).toBe(0);
+    expect(result.decision).toBe("REJECT");
+    expect(result.reasons).toContain("Invalid income");
   });
 
   it("score is clamped to 100 and never exceeds 100 for perfect applicant", () => {

@@ -18,12 +18,16 @@ export interface ScoreResult {
 }
 
 export function computeScore(input: LoanApplicationInput): ScoreResult {
+  // Validate income
+  if (input.incomeMonthly <= 0) {
+    return { score: 0, decision: "REJECT", reasons: ["Invalid income"] };
+  }
+
   let score = 100;
   const reasons: string[] = [];
 
   // Debt ratio rule
-  const ratio =
-    (input.existingDebt + input.requestedAmount) / (input.incomeMonthly * 12);
+  const ratio = (input.existingDebt + input.requestedAmount) / (input.incomeMonthly * 12);
   if (ratio > 0.5) {
     score -= 40;
     reasons.push("Debt ratio exceeds 50% of annual income (-40)");
@@ -55,9 +59,9 @@ export function computeScore(input: LoanApplicationInput): ScoreResult {
   if (input.age < 21) {
     score -= 15;
     reasons.push("Age below 21 (-15)");
-  } else if (input.age >= 65) {
+  } else if (input.age > 65) {
     score -= 10;
-    reasons.push("Age 65 or above (-10)");
+    reasons.push("Age above 65 (-10)");
   }
 
   // Clamp score between 0 and 100
