@@ -2,6 +2,10 @@
   "chat.tools.terminal.autoApprove": {
     "pnpm": true,
     "timeout": true,
-    "true": true
+    "true": true,
+    "/^pnpm info fastify-type-provider-zod versions --json 2>&1 \\| node -e \"const d=JSON\\.parse\\(require\\('fs'\\)\\.readFileSync\\('/dev/stdin','utf8'\\)\\); console\\.log\\(d\\.slice\\(-8\\)\\.join\\('\\\\n'\\)\\)\"$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
   }
 }

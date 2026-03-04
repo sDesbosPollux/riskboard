@@ -11,8 +11,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@fastify/cors": "^10.0.0",
     "@riskboard/domain": "workspace:*",
-    "fastify": "^5.2.1"
+    "fastify": "^5.2.1",
+    "zod": "^3.22.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
