@@ -16,6 +16,9 @@
     "format": "prettier --check .",
     "format:write": "prettier --write ."
   },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  },
   "devDependencies": {
     "@types/node": "^25.3.3",
     "eslint": "^9.0.0",
